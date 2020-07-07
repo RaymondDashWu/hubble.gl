@@ -1,9 +1,12 @@
-import React, {Component} from 'react';
+import React, {Component, useState, useRef} from 'react';
 import {render} from 'react-dom';
-
 import DeckGL from '@deck.gl/react';
 import {GeoJsonLayer, ColumnLayer} from '@deck.gl/layers';
 import {StaticMap} from 'react-map-gl';
+import {DeckAdapter} from '@hubble.gl/core';
+import {useNextFrame, BasicControls} from '@hubble.gl/react';
+import {sceneBuilder} from './scene';
+
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
@@ -19,6 +22,22 @@ const INITIAL_VIEW_STATE = {
   zoom: 10,
   pitch: 0,
   bearing: 0
+};
+
+const adapter = new DeckAdapter(sceneBuilder);
+
+/** @type {import('@hubble.gl/core/src/types').FrameEncoderSettings} */
+const encoderSettings = {
+  framerate: 30,
+  webm: {
+    quality: 0.8
+  },
+  jpeg: {
+    quality: 0.8
+  },
+  gif: {
+    sampleInterval: 1000
+  }
 };
 
 class Layers extends Component {
