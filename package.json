@@ -60,5 +60,9 @@
     "prettier": "^1.18.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
+  },
+  "dependencies": {
+    "deck.gl": "^8.2.0",
+    "react-map-gl": "^5.2.7"
   }
 }
