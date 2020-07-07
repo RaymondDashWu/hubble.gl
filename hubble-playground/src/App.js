@@ -5,7 +5,7 @@ import {GeoJsonLayer, ColumnLayer} from '@deck.gl/layers';
 import {StaticMap} from 'react-map-gl';
 import {DeckAdapter} from '@hubble.gl/core';
 import {useNextFrame, BasicControls} from '@hubble.gl/react';
-import {sceneBuilder} from './scene';
+// import {sceneBuilder} from './scene';
 
 
 // Set your mapbox access token here
@@ -24,21 +24,21 @@ const INITIAL_VIEW_STATE = {
   bearing: 0
 };
 
-const adapter = new DeckAdapter(sceneBuilder);
+// const adapter = new DeckAdapter(sceneBuilder);
 
-/** @type {import('@hubble.gl/core/src/types').FrameEncoderSettings} */
-const encoderSettings = {
-  framerate: 30,
-  webm: {
-    quality: 0.8
-  },
-  jpeg: {
-    quality: 0.8
-  },
-  gif: {
-    sampleInterval: 1000
-  }
-};
+// /** @type {import('@hubble.gl/core/src/types').FrameEncoderSettings} */
+// const encoderSettings = {
+//   framerate: 30,
+//   webm: {
+//     quality: 0.8
+//   },
+//   jpeg: {
+//     quality: 0.8
+//   },
+//   gif: {
+//     sampleInterval: 1000
+//   }
+// };
 
 class Layers extends Component {
   _onClick(info) {
