@@ -1,11 +1,11 @@
-import React, {Component, useState, useRef} from 'react';
+import React, {Component} from 'react';
 import {render} from 'react-dom';
+
 import DeckGL from '@deck.gl/react';
 import {GeoJsonLayer, ColumnLayer} from '@deck.gl/layers';
 import {StaticMap} from 'react-map-gl';
-import {DeckAdapter} from '@hubble.gl/core';
-import {useNextFrame, BasicControls} from '@hubble.gl/react';
-// import {sceneBuilder} from './scene';
+
+import Draggable from 'react-draggable';
 
 
 // Set your mapbox access token here
@@ -23,22 +23,6 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
   bearing: 0
 };
-
-// const adapter = new DeckAdapter(sceneBuilder);
-
-// /** @type {import('@hubble.gl/core/src/types').FrameEncoderSettings} */
-// const encoderSettings = {
-//   framerate: 30,
-//   webm: {
-//     quality: 0.8
-//   },
-//   jpeg: {
-//     quality: 0.8
-//   },
-//   gif: {
-//     sampleInterval: 1000
-//   }
-// };
 
 class Layers extends Component {
   _onClick(info) {
@@ -89,8 +73,12 @@ class Layers extends Component {
           + "\n" + "KM Below Surface " +  
           object["geometry"]["coordinates"][2])}
       >
-        <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle="mapbox://styles/mapbox/outdoors-v11" 
-        />
+        <div id="overlay">
+          <Draggable bounds="parent">
+            <div className="box" style={{height: '10%', width: '20%', position: 'relative', overflow: 'auto', padding: '0', backgroundColor: 'white',}}>Title of Data</div>
+          </Draggable>
+        </div>
+        <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle="mapbox://styles/mapbox/outdoors-v11" />
       </DeckGL>
     );
   }
