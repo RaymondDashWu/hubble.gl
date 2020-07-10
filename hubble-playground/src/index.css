@@ -21,7 +21,8 @@ code {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.8); /* Black background with opacity */
+  background-image: url(https://i.imgur.com/4dd0brF.png);
+  background-size: 100% 100%;
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   cursor: pointer; /* Add a pointer on hover */
 }

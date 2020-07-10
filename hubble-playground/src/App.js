@@ -75,7 +75,7 @@ class Layers extends Component {
       >
         <div id="overlay">
           <Draggable bounds="parent">
-            <div className="box" style={{height: '10%', width: '20%', position: 'relative', overflow: 'auto', padding: '0', backgroundColor: 'white',}}>Title of Data</div>
+            <div className="box" style={{height: '10%', width: '20%', position: 'relative', overflow: 'auto', padding: '0', backgroundColor: 'white',}}>Title of Data (Only movable within overlay)</div>
           </Draggable>
         </div>
         <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle="mapbox://styles/mapbox/outdoors-v11" />
