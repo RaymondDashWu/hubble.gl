@@ -359,7 +359,6 @@ class App extends Component {
   render() {
     return (
       <ThemeProvider theme={theme}>
-        <h1>Use this button to export an animation using Hubble</h1>
           <HubbleExport />
         <GlobalStyle
           // this is to apply the same modal style as kepler.gl core
