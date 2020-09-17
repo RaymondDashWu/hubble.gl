@@ -24,7 +24,7 @@ import styled, {withTheme} from 'styled-components';
 import {createSelector} from 'reselect';
 import RenderSettingsPanel from './render-settings-panel';
 import Modal from 'react-modal';
-import DIMENSIONS from 'kepler.gl';
+import {DIMENSIONS} from 'kepler.gl';
 
 const ModalContainer = styled.div`
   position: relative;
@@ -101,6 +101,7 @@ class RenderSettingsModal extends Component {
   );
 
   render() {
+    console.log("Reached render modal")
     const {isOpen, handleClose} = this.props;
 
     const modalStyles = this.modalStylesSelector(this.props);

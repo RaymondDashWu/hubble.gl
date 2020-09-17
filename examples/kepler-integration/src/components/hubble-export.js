@@ -54,7 +54,10 @@ import toggleHubbleExportModal from 'kepler.gl'; // TODO make custom action
 //   )
 // );
 
-const mapStateToProps = (state) => state
+const mapStateToProps = (state) => {
+    // console.log("keplerGlGetState state", state)
+    // console.log("state.demo.keplerGl", state.demo.keplerGl)
+    return {mapData: state.demo.keplerGl.map}}
 
 
 // function mapStateToProps(state = {}, props) {
@@ -79,16 +82,27 @@ const mapDispatchToProps = () => (dispatch, props) => {
 }	
 
 export class HubbleExport extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            isOpen: false
+        }
+    }
+    
     handleClose() {this.props.toggleHubbleExportModal(false)} // X button in RenderSettingsModal was clicked
     handleExport() {this.props.toggleHubbleExportModal(true)} // Export button in Kepler UI was clicked
 
     render() {
         console.log("this.props", this.props)
+        console.log("this.state.isOpen", this.state.isOpen)
         return (
             <div>
-                <RenderSettingsModal isOpen={this.props.uiState.hubbleExportModalOpen} handleClose={this.handleClose.bind(this)} mapData={this.props}/>
-                <ThemeProvider theme={RenderSettingsModal}></ThemeProvider>
-                <h1>Use this button to export an animation using Hubble <button onClick={() => this.handleExport()}>Export</button></h1> {/* anonymous function to bind state onclick  */}
+                {/* TODO hardcoded this.props.mapData.visState.layers.length . Change to something more scalable */}
+                {this.props.mapData && this.props.mapData.visState.layers.length == 2 && <RenderSettingsModal isOpen={this.state.isOpen} handleClose={this.handleClose.bind(this)} mapData={this.props.mapData}/>}
+                {/* <RenderSettingsModal isOpen={this.props.uiState.hubbleExportModalOpen} handleClose={this.handleClose.bind(this)} mapData={this.props}/> */}
+                {/* <ThemeProvider theme={RenderSettingsModal}></ThemeProvider> */}
+                <h1>Use this button to export an animation using Hubble <button onClick={() => this.setState({isOpen: true})}>Export</button></h1> {/* anonymous function to bind state onclick  */}
             </div>
         )
     }

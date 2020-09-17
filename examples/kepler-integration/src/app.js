@@ -397,9 +397,9 @@ class App extends Component {
                   getState={keplerGlGetState}
                   width={width}
                   height={height}
-                  cloudProviders={CLOUD_PROVIDERS}
-                  onExportToCloudSuccess={onExportFileSuccess}
-                  onLoadCloudMapSuccess={onLoadCloudMapSuccess}
+                  // cloudProviders={CLOUD_PROVIDERS}
+                  // onExportToCloudSuccess={onExportFileSuccess}
+                  // onLoadCloudMapSuccess={onLoadCloudMapSuccess}
                 />
               )}
             </AutoSizer>

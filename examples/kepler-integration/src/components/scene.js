@@ -22,7 +22,7 @@ import React, {Component} from 'react';
 
 //Map Component
 import DeckGL from '@deck.gl/react';
-import {OVERLAY_TYPE} from 'kepler.gl';
+// import {OVERLAY_TYPE} from 'kepler.gl';
 import {MapboxGLMap, StaticMap} from 'react-map-gl';
 import {transformRequest} from 'kepler.gl';
 
@@ -39,7 +39,7 @@ export class Scene extends Component {
 
     // Setting up arguments for Orthographic View
     // NOTE: other arguments allowed zoom, minZoom, maxZoom but those already used by TileLayer. Possible to have 2 instanes?
-    this.mapData.mapState.target = [10, 10, 10]
+    // this.mapData.mapState.target = [10, 10, 10]
     // this.mapData.mapState.zoom = 100
     this.state = {
       timestamp: {
@@ -188,9 +188,9 @@ export class Scene extends Component {
           deckGlLayers = layerOrder
             .slice()
             .reverse()
-            .filter(
-              idx => layers[idx].overlayType === OVERLAY_TYPE.deckgl && layers[idx].id
-            )
+            // .filter(
+            //   idx => layers[idx].overlayType === OVERLAY_TYPE.deckgl && layers[idx].id
+            // )
             .reduce(this._renderLayer, []);
           // deckGlLayers.splice(0, 0, tileLayer)
 
