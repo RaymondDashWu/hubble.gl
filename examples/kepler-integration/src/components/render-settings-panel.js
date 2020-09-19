@@ -20,9 +20,7 @@
 
 import React, {Component} from 'react';
 import styled, {withTheme} from 'styled-components';
-import {Button, Input} from 'kepler.gl';
-import Delete from 'kepler.gl';
-import ItemSelector from 'kepler.gl';
+import {Button, Input, Icons, ItemSelector} from 'kepler.gl/components';
 import {Scene} from './scene'; // Not yet part of standard library. TODO when updated
 
 import { point } from '@turf/helpers';
@@ -42,6 +40,8 @@ import {DeckAdapter, ScatterPlotLayerKeyframes} from 'hubble.gl';
 
 import {DEFAULT_TIME_FORMAT} from 'kepler.gl';
 import moment from 'moment';
+import {messages} from 'kepler.gl/localization';
+import {IntlProvider} from 'react-intl';
 
 const DEFAULT_BUTTON_HEIGHT = '32px';
 const DEFAULT_BUTTON_WIDTH = '64px';
@@ -50,28 +50,27 @@ const DEFAULT_ROW_GAP = '16px';
 
 //const keyframes = setKeyframes(camera);
 let adapter = new DeckAdapter(sceneBuilder);
-let mapdataGlobal = null;
 
 function sceneBuilder(animationLoop) {
   const data = {};
   const keyframes = 
   {
     camera: new CameraKeyframes({
-      timings: [0, 1000],
+      timings: [0, 5000],
       keyframes: [
         {
-          longitude: mapdataGlobal.mapState.longitude,
-          latitude: mapdataGlobal.mapState.latitude,
-          zoom: mapdataGlobal.mapState.zoom,
-          pitch: 0,
+          longitude: -122.4,
+          latitude: 37.74,
+          zoom: 11,
+          pitch: 30,
           bearing: 0
         },
         {
-          longitude: mapdataGlobal.mapState.longitude,
-          latitude: mapdataGlobal.mapState.latitude,
-          zoom: mapdataGlobal.mapState.zoom,
-          bearing: 0,
-          pitch: 0
+          longitude: -122.4,
+          latitude: 37.74,
+          zoom: 11.8,
+          bearing: 35,
+          pitch: 70
         }
       ],
       easings: [easing.easeInOut]
@@ -112,7 +111,6 @@ function preview() {
 }
 
 function setFileNameDeckAdapter(name){
-  console.log(mapdataGlobal);
   encoderSettings.filename = name + " " + moment().format(DEFAULT_TIME_FORMAT).toString();
 }
 
@@ -175,7 +173,7 @@ const PanelCloseInner = styled.div`
 const PanelClose = ({buttonHeight, handleClose}) => (
   <PanelCloseInner className="render-settings-panel__close" >
     <IconButton className="render-settings-panel__button" link onClick={() => {handleClose()}}>
-      <Delete height={buttonHeight} />
+      <Icons.Delete height={buttonHeight} />
     </IconButton>
   </PanelCloseInner>
 );
@@ -229,9 +227,28 @@ const InputGrid = styled.div`
   grid-row-gap: ${DEFAULT_ROW_GAP};
 `;
 
+// PSEUDOCODE (all within scene.js)
+// setup initial_view_state to mapState values
+// componentDidMount
+// const INITIAL_VIEW_STATE = {
+//   longitude: mapState.longitude,
+//   latitude: ...,
+//   zoom: ...,
+//   pitch: 30,
+//   bearing: 0
+// };
+
+// react state to store view_state
+// for when user moves camera within modal
+
+// see how viewState is used
+// https://github.com/CodeLabs-Hubble-gl/hubble.gl/blob/master/examples/camera/app.js#L42
+
+// then dispatch kepler store? TODO for future
+
 const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*/, settingsData}) => (
   <PanelBodyInner className="render-settings-panel__body"> 
-     <div style={{width: "480px", height: "460px"}}>
+    <div style={{width: "480px", height: "460px"}}>
        <Scene mapData={mapData} encoderSettings={encoderSettings} adapter={adapter} /*ref={sce}*//> 
     </div>
     <div>
@@ -359,7 +376,6 @@ class RenderSettingsPanel extends Component {
     this.setCamera = this.setCamera.bind(this);
     this.setFileName = this.setFileName.bind(this);
    // this.setQuality = this.setQuality.bind(this);
-   mapdataGlobal = this.props.mapData;
   }
 
   componentWillUnmount() { 
@@ -434,7 +450,7 @@ class RenderSettingsPanel extends Component {
   }
 
   resetKeyframes() { // minified default keyframes from scenebuilder fn
-    return {camera:new CameraKeyframes({timings:[0,1000],keyframes:[{longitude:mapdataGlobal.mapState.longitude,latitude:mapdataGlobal.mapState.latitude,zoom:mapdataGlobal.mapState.zoom,pitch:0,bearing:0},{longitude:mapdataGlobal.mapState.longitude,latitude:mapdataGlobal.mapState.latitude,zoom:mapdataGlobal.mapState.zoom,bearing:0,pitch:0}],easings:[easing.easeInOut]})}
+    return new CameraKeyframes({timings:[0,5e3],keyframes:[{longitude:-122.4,latitude:37.74,zoom:11,pitch:30,bearing:0},{longitude:-122.4,latitude:37.74,zoom:11.8,bearing:35,pitch:70}],easings:[easing.easeInOut]})
   }
  
   setMediaTypeState(media){
@@ -463,6 +479,7 @@ class RenderSettingsPanel extends Component {
 
   
   render() {
+    
     console.log("this.state", this.state)
     const {buttonHeight, settingsWidth, handleClose} = this.props;
     const settingsData = {
@@ -473,25 +490,26 @@ class RenderSettingsPanel extends Component {
     }
    
     return (
-    
-      <Panel settingsWidth={settingsWidth} className="render-settings-panel">
-        <PanelClose 
-            buttonHeight={buttonHeight} 
-            handleClose={handleClose}/> {/* handleClose for X button */}
-        <StyledTitle className="render-settings-panel__title">Export Video</StyledTitle>  
-        <PanelBody 
-            mapData={this.props.mapData} 
-            setMediaType={this.setMediaTypeState} 
-            setCamera={this.setCamera}
-            setFileName={this.setFileName}
-          //  setQuality={this.setQuality}
-            settingsData={settingsData}
-            />
-        <PanelFooter 
-            handleClose={handleClose} 
-            settingsData = {settingsData}
-            /> {/* handleClose for Cancel button */}
-      </Panel>
+      <IntlProvider locale="en" messages={messages["en"]}>
+        <Panel settingsWidth={settingsWidth} className="render-settings-panel">
+          <PanelClose 
+              buttonHeight={buttonHeight} 
+              handleClose={handleClose}/> {/* handleClose for X button */}
+          <StyledTitle className="render-settings-panel__title">Export Video</StyledTitle>  
+          <PanelBody 
+              mapData={this.props.mapData} 
+              setMediaType={this.setMediaTypeState} 
+              setCamera={this.setCamera}
+              setFileName={this.setFileName}
+            //  setQuality={this.setQuality}
+              settingsData={settingsData}
+              />
+          <PanelFooter 
+              handleClose={handleClose} 
+              settingsData = {settingsData}
+              /> {/* handleClose for Cancel button */} 
+        </Panel>
+      </IntlProvider>
     );
   }
 }

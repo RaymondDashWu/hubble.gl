@@ -102,6 +102,7 @@ class RenderSettingsModal extends Component {
 
   render() {
     console.log("Reached render modal")
+    console.log("this.props.mapData", this.props.mapData)
     const {isOpen, handleClose} = this.props;
 
     const modalStyles = this.modalStylesSelector(this.props);

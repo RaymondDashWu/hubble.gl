@@ -22,7 +22,7 @@ import React, {Component} from 'react';
 
 //Map Component
 import DeckGL from '@deck.gl/react';
-// import {OVERLAY_TYPE} from 'kepler.gl';
+import {OVERLAY_TYPE} from 'kepler.gl';
 import {MapboxGLMap, StaticMap} from 'react-map-gl';
 import {transformRequest} from 'kepler.gl';
 

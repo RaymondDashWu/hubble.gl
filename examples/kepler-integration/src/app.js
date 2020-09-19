@@ -183,7 +183,7 @@ class App extends Component {
     // this._loadIconData();
     // this._loadH3HexagonData();
     // this._loadS2Data();
-    // this._loadScenegraphLayer();
+    this._loadScenegraphLayer();
   }
 
   _loadPointData() {
@@ -230,6 +230,15 @@ class App extends Component {
                     },
                     isVisible: true
                   }
+                }
+              ],
+              filters: [
+                {
+                  id: 'me',
+                  dataId: 'test_trip_data',
+                  name: 'tpep_pickup_datetime',
+                  type: 'timeRange',
+                  enlarged: true
                 }
               ]
             }
@@ -359,7 +368,6 @@ class App extends Component {
   render() {
     return (
       <ThemeProvider theme={theme}>
-          <HubbleExport />
         <GlobalStyle
           // this is to apply the same modal style as kepler.gl core
           // because styled-components doesn't always return a node
@@ -368,14 +376,14 @@ class App extends Component {
             node ? (this.root = node) : null;
           }}
         >
-          {/* <Banner
+          <Banner
             show={this.state.showBanner}
             height={BannerHeight}
             bgColor="#2E7CF6"
             onClose={this._hideBanner}
           >
             <Announcement onDisable={this._disableBanner} />
-          </Banner> */}
+          </Banner>
           <div
             style={{
               transition: 'margin 1s, height 1s',
@@ -397,13 +405,14 @@ class App extends Component {
                   getState={keplerGlGetState}
                   width={width}
                   height={height}
-                  // cloudProviders={CLOUD_PROVIDERS}
-                  // onExportToCloudSuccess={onExportFileSuccess}
-                  // onLoadCloudMapSuccess={onLoadCloudMapSuccess}
+                  cloudProviders={CLOUD_PROVIDERS}
+                  onExportToCloudSuccess={onExportFileSuccess}
+                  onLoadCloudMapSuccess={onLoadCloudMapSuccess}
                 />
               )}
             </AutoSizer>
           </div>
+          <HubbleExport />
         </GlobalStyle>
       </ThemeProvider>
     );

@@ -30,30 +30,6 @@ import {connect as keplerGlConnect} from 'kepler.gl';
 import {connect} from 'react-redux';
 import toggleHubbleExportModal from 'kepler.gl'; // TODO make custom action
 
-// import {createStore, combineReducers, applyMiddleware, compose} from 'redux';
-// import keplerGlReducer from 'kepler.gl/reducers';
-// import {enhanceReduxMiddleware} from 'kepler.gl/middleware';
-
-// const initialState = {};
-// const reducers = combineReducers({
-//   // <-- mount kepler.gl reducer in your app
-//   keplerGl: keplerGlReducer,
-
-//   // Your other reducers here
-// //   app: appReducer
-// });
-
-// // using createStore
-// createStore(
-//   reducers,
-//   initialState,
-//   applyMiddleware(
-//     enhanceReduxMiddleware([
-//       /* Add other middlewares here */
-//     ])
-//   )
-// );
-
 const mapStateToProps = (state) => {
     // console.log("keplerGlGetState state", state)
     // console.log("state.demo.keplerGl", state.demo.keplerGl)
@@ -90,8 +66,10 @@ export class HubbleExport extends Component {
         }
     }
     
-    handleClose() {this.props.toggleHubbleExportModal(false)} // X button in RenderSettingsModal was clicked
-    handleExport() {this.props.toggleHubbleExportModal(true)} // Export button in Kepler UI was clicked
+    // handleClose() {this.props.toggleHubbleExportModal(false)} // X button in RenderSettingsModal was clicked
+    // handleExport() {this.props.toggleHubbleExportModal(true)} // Export button in Kepler UI was clicked
+    handleClose() {this.setState({isOpen: false})} // X button in RenderSettingsModal was clicked
+    handleExport() {this.setState({isOpen: true})} // Export button in Kepler UI was clicked
 
     render() {
         console.log("this.props", this.props)
@@ -99,10 +77,10 @@ export class HubbleExport extends Component {
         return (
             <div>
                 {/* TODO hardcoded this.props.mapData.visState.layers.length . Change to something more scalable */}
-                {this.props.mapData && this.props.mapData.visState.layers.length == 2 && <RenderSettingsModal isOpen={this.state.isOpen} handleClose={this.handleClose.bind(this)} mapData={this.props.mapData}/>}
+                {this.props.mapData && this.props.mapData.visState.layers.length == 2 && this.props.mapData.visState.filters && <RenderSettingsModal isOpen={this.state.isOpen} handleClose={this.handleClose.bind(this)} mapData={this.props.mapData}/>}
                 {/* <RenderSettingsModal isOpen={this.props.uiState.hubbleExportModalOpen} handleClose={this.handleClose.bind(this)} mapData={this.props}/> */}
                 {/* <ThemeProvider theme={RenderSettingsModal}></ThemeProvider> */}
-                <h1>Use this button to export an animation using Hubble <button onClick={() => this.setState({isOpen: true})}>Export</button></h1> {/* anonymous function to bind state onclick  */}
+                <h1>Use this button to export an animation using Hubble <button onClick={() => this.handleExport()}>Export</button></h1> {/* anonymous function to bind state onclick  */}
             </div>
         )
     }
