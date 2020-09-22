@@ -1,5 +1,9 @@
 {
   "scripts": {
+    "bootstrap": "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true yarn && ocular-bootstrap",
+    "checkjs": "tsc --noEmit --allowJs --checkJs --target ES5 src/*.js",
+    "clean": "ocular-clean",
+    "build": "ocular-clean && ocular-build && lerna run build",
     "start": "webpack-dev-server --mode development --progress --hot --open",
     "start-prod": "webpack-dev-server -p --progress --hot --open",
     "start-local": "webpack-dev-server --mode development --env.es6 --progress --hot --open",
@@ -19,6 +23,7 @@
     "kepler.gl": "^2.3.1",
     "lodash.debounce": "^4.0.8",
     "lodash.get": "^4.4.2",
+    "ocular-dev-tools": "^0.1.9",
     "react": "^16.8.4",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.8.4",

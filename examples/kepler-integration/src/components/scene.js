@@ -121,6 +121,7 @@ export class Scene extends Component {
        
      //   interactionConfig,  
         render() {
+          console.log('this.deckgl', this.deckgl)
         const mapStyle = this.mapData.mapStyle;
         const mapState = this.mapData.mapState;
         const layers = this.mapData.visState.layers;    
@@ -234,7 +235,7 @@ export class Scene extends Component {
         return (
             <div id="deck-canvas" style={{width: '480px', height: "460px", position: 'relative'}}>
               <DeckGL
-                ref={r => {this.deckgl={current:r}}}
+                ref={r => {this.deckgl={current:r}}} // TODO problem line.
                 viewState={mapState}
                 id="default-deckgl-overlay2"
                 layers={deckGlLayers}
