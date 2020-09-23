@@ -38,6 +38,8 @@ import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
 import {easing} from 'popmotion';
 import {DeckAdapter, ScatterPlotLayerKeyframes} from 'hubble.gl';
 
+// import {DeckAdapter} from '../../../../modules/core/src/adapters/deck-adapter'
+
 import {DEFAULT_TIME_FORMAT} from 'kepler.gl';
 import moment from 'moment';
 import {messages} from 'kepler.gl/localization';
