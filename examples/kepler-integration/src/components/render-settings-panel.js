@@ -38,8 +38,6 @@ import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
 import {easing} from 'popmotion';
 import {DeckAdapter, ScatterPlotLayerKeyframes} from 'hubble.gl';
 
-// import {DeckAdapter} from '../../../../modules/core/src/adapters/deck-adapter'
-
 import {DEFAULT_TIME_FORMAT} from 'kepler.gl';
 import moment from 'moment';
 import {messages} from 'kepler.gl/localization';
@@ -50,27 +48,32 @@ const DEFAULT_BUTTON_WIDTH = '64px';
 const DEFAULT_PADDING = '32px';
 const DEFAULT_ROW_GAP = '16px';
 
-//const keyframes = setKeyframes(camera);
+const INITIAL_VIEW_STATE = {
+  longitude: -122.4,
+  latitude: 37.74,
+  zoom: 11,
+  pitch: 30,
+  bearing: 0
+};
+
 let adapter = new DeckAdapter(sceneBuilder);
 
 function sceneBuilder(animationLoop) {
-  const data = {};
-  const keyframes = 
-  {
+  const keyframes = {
     camera: new CameraKeyframes({
       timings: [0, 5000],
       keyframes: [
         {
           longitude: -122.4,
           latitude: 37.74,
-          zoom: 11,
+          zoom: 1,
           pitch: 30,
           bearing: 0
         },
         {
           longitude: -122.4,
           latitude: 37.74,
-          zoom: 11.8,
+          zoom: 1.8,
           bearing: 35,
           pitch: 70
         }
@@ -78,16 +81,15 @@ function sceneBuilder(animationLoop) {
       easings: [easing.easeInOut]
     })
   };
-  animationLoop.timeline.attachAnimation(keyframes.camera);
+  const currentCamera = animationLoop.timeline.attachAnimation(keyframes.camera);
 
-  // TODO: Figure out how to set up the size 
   return new DeckScene({
     animationLoop,
     keyframes,
-    lengthMs: 1000,
-    data,
-   width: 480,
-   height: 460
+    lengthMs: 5000,
+    width: 640,
+    height: 480,
+    currentCamera
   });
 }
 
@@ -301,7 +303,7 @@ const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*
         options={['Good (540p)', 'High (720p)', 'Highest (1080p)']}
         multiSelect={false}
         searchable={false}
-       /* onChange={setQuality}*/
+        onChange={() => {}}
       />
     </InputGrid>
     <InputGrid style={{marginTop: DEFAULT_ROW_GAP}} rows={2} rowHeight="18px">
@@ -371,7 +373,9 @@ class RenderSettingsPanel extends Component {
       camera: "None", 
       fileName: "Video Name",
       cameraHandle: undefined,
-    //  quality: "High (720p)"
+    //  quality: "High (720p)",
+      viewState: INITIAL_VIEW_STATE,
+      setViewState: INITIAL_VIEW_STATE,
     };
 
     this.setMediaTypeState = this.setMediaTypeState.bind(this);
@@ -389,12 +393,38 @@ class RenderSettingsPanel extends Component {
     buttonHeight: '16px'
   };
 
+  updateCamera(prevCamera) {
+    // Set by User
+    prevCamera = new CameraKeyframes({
+      timings: [0, 5000],
+      keyframes: [
+        {
+          longitude: viewState.longitude,
+          latitude: viewState.latitude,
+          zoom: viewState.zoom,
+          pitch: viewState.pitch,
+          bearing: viewState.bearing
+        },
+        {
+          longitude: viewState.longitude,
+          latitude: viewState.latitude,
+          zoom: viewState.zoom,
+          bearing: viewState.bearing,
+          pitch: viewState.pitch
+        }
+      ],
+      easings: [easing.easeInOut]
+    });
+
+    return prevCamera;
+  };
+
   createKeyframe(strCameraType) {    
     if (this.state.cameraHandle != undefined) { 
       // NOTE this is where each parts of chain come from
       // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
       adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)
-      adapter.scene.keyframes = this.resetKeyframes() // Resets keyframes so that they don't inherit other options
+      adapter.scene.keyframes.camera = this.resetKeyframes() // Resets keyframes so that they don't inherit other options
       console.log("DETACHED")
     }
 
@@ -452,7 +482,7 @@ class RenderSettingsPanel extends Component {
   }
 
   resetKeyframes() { // minified default keyframes from scenebuilder fn
-    return new CameraKeyframes({timings:[0,5e3],keyframes:[{longitude:-122.4,latitude:37.74,zoom:11,pitch:30,bearing:0},{longitude:-122.4,latitude:37.74,zoom:11.8,bearing:35,pitch:70}],easings:[easing.easeInOut]})
+    return new CameraKeyframes({timings:[0,5e3],keyframes:[{longitude:-122.4,latitude:37.74,zoom:5,pitch:30,bearing:0},{longitude:-122.4,latitude:37.74,zoom:5,bearing:35,pitch:50}],easings:[easing.easeInOut]})
   }
  
   setMediaTypeState(media){

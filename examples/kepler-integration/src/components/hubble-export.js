@@ -77,7 +77,7 @@ export class HubbleExport extends Component {
         return (
             <div>
                 {/* TODO hardcoded this.props.mapData.visState.layers.length . Change to something more scalable */}
-                {this.props.mapData && this.props.mapData.visState.layers.length == 2 && this.props.mapData.visState.filters && <RenderSettingsModal isOpen={this.state.isOpen} handleClose={this.handleClose.bind(this)} mapData={this.props.mapData}/>}
+                <RenderSettingsModal isOpen={this.state.isOpen} handleClose={this.handleClose.bind(this)} mapData={this.props.mapData}/>
                 {/* <RenderSettingsModal isOpen={this.props.uiState.hubbleExportModalOpen} handleClose={this.handleClose.bind(this)} mapData={this.props}/> */}
                 {/* <ThemeProvider theme={RenderSettingsModal}></ThemeProvider> */}
                 <h1>Use this button to export an animation using Hubble <button onClick={() => this.handleExport()}>Export</button></h1> {/* anonymous function to bind state onclick  */}

@@ -201,7 +201,7 @@ export class Scene extends Component {
           // }
         }
 
-        deckGlLayers[3] = timestamp;
+        // deckGlLayers[3] = timestamp;
         deckGlLayers[2] = deckGlLayers[1];
         deckGlLayers[1] = deckGlLayers[0]
         deckGlLayers[0] = tileLayer;
@@ -242,7 +242,8 @@ export class Scene extends Component {
                 layerFilter={this.layerFilter}
                 useDevicePixels={useDevicePixels}
                 style={style}
-                onViewStateChange={this.onViewStateChange}
+                // onViewStateChange={this.onViewStateChange}
+                onViewStateChange={({viewState: vs}) => {setViewState(vs);}}
                 views={[
                   new MapView({id: 'MapView', repeat: true}),
                   new OrthographicView({id: "timestamp"})
