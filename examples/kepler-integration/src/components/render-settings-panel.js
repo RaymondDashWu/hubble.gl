@@ -87,8 +87,8 @@ function sceneBuilder(animationLoop) {
     animationLoop,
     keyframes,
     lengthMs: 5000,
-    width: 640,
-    height: 480,
+    width: 480,
+    height: 460,
     currentCamera
   });
 }
@@ -145,6 +145,7 @@ function render(settingsdata){
     } else if (settingsdata.mediaType === 'JPEG Sequence') {
       adapter.render(JPEGSequenceEncoder, encoderSettings, () => {});
     } 
+    updateCamera();
   // preview();
   }
 
@@ -375,7 +376,7 @@ class RenderSettingsPanel extends Component {
       cameraHandle: undefined,
     //  quality: "High (720p)",
       viewState: INITIAL_VIEW_STATE,
-      setViewState: INITIAL_VIEW_STATE,
+      setViewState: INITIAL_VIEW_STATE, // TODO unsure of how to use vs original implementation https://github.com/CodeLabs-Hubble-gl/hubble.gl/blob/master/examples/camera/app.js#L42
     };
 
     this.setMediaTypeState = this.setMediaTypeState.bind(this);
@@ -424,7 +425,7 @@ class RenderSettingsPanel extends Component {
       // NOTE this is where each parts of chain come from
       // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
       adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)
-      adapter.scene.keyframes.camera = this.resetKeyframes() // Resets keyframes so that they don't inherit other options
+      // adapter.scene.keyframes.camera = this.resetKeyframes() // Resets keyframes so that they don't inherit other options
       console.log("DETACHED")
     }
 
@@ -481,9 +482,9 @@ class RenderSettingsPanel extends Component {
     }
   }
 
-  resetKeyframes() { // minified default keyframes from scenebuilder fn
-    return new CameraKeyframes({timings:[0,5e3],keyframes:[{longitude:-122.4,latitude:37.74,zoom:5,pitch:30,bearing:0},{longitude:-122.4,latitude:37.74,zoom:5,bearing:35,pitch:50}],easings:[easing.easeInOut]})
-  }
+  // resetKeyframes() { // minified default keyframes from scenebuilder fn
+  //   return new CameraKeyframes({timings:[0,5e3],keyframes:[{longitude:-122.4,latitude:37.74,zoom:5,pitch:30,bearing:0},{longitude:-122.4,latitude:37.74,zoom:5,bearing:35,pitch:50}],easings:[easing.easeInOut]})
+  // }
  
   setMediaTypeState(media){
     this.setState({
