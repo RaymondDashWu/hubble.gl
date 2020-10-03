@@ -82,27 +82,10 @@ class RenderSettingsModal extends Component {
       overlay: {
         backgroundColor: 'rgba(0, 0, 0, .5)'
       }
-      // content: { // TODO delete once final look is set
-      //   top: 0,
-      //   left: 0,
-      //   border: 0,
-      //   right: 'auto',
-      //   bottom: 'auto',
-      //   padding: '0px 0px 0px 0px',
-      //   borderRadius: theme.panelBorderRadius || '2px'
-      // },
-      // overlay: {
-      //   ...settingsPos,
-      //   right: 'auto',
-      //   bottom: 'auto',
-      //   backgroundColor: 'rgba(0, 0, 0, 0)'
-      // }
     })
   );
 
   render() {
-    console.log("Reached render modal")
-    console.log("this.props.mapData", this.props.mapData)
     const {isOpen, handleClose} = this.props;
 
     const modalStyles = this.modalStylesSelector(this.props);

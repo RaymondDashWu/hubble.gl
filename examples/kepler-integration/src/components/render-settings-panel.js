@@ -28,6 +28,8 @@ import {RenderSettingsPanelPreview} from './render-settings-panel-preview'; // N
 import { point } from '@turf/helpers';
 import transformTranslate from '@turf/transform-translate';
 
+import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
+import {easing} from 'popmotion';
 
 import {
   WebMEncoder,
@@ -51,7 +53,7 @@ const DEFAULT_ROW_GAP = '16px';
 const INITIAL_VIEW_STATE = {
   longitude: -122.4,
   latitude: 37.74,
-  zoom: 11,
+  zoom: 1,
   pitch: 30,
   bearing: 0
 };
@@ -75,9 +77,8 @@ const encoderSettings = {
   filename: "Default Video Name" + " " + moment().format(DEFAULT_TIME_FORMAT).toString()
 };
 
-function preview() {
-  adapter.render(PreviewEncoder, encoderSettings, ()=>{});
-  // updateCamera(); // TODO anti-pattern?
+function preview(updateCamera) {
+  adapter.render(PreviewEncoder, encoderSettings, ()=>{}, updateCamera);
 }
 
 function setFileNameDeckAdapter(name){
@@ -100,18 +101,17 @@ function setFileNameDeckAdapter(name){
 // This is temporary, for showing purposes on Friday, resolution settings should be in a separate function, 
 // only because we are against the clock. 
 // TODO: refactor
-function render(settingsdata){
-
+function render(settingsdata, updateCamera){
   //  setResolution(settingsdata.resolution); // Remove this
 
     if (settingsdata.mediaType === 'WebM Video') {
-      adapter.render(WebMEncoder, encoderSettings, () => {});
+      adapter.render(WebMEncoder, encoderSettings, () => {}, updateCamera);
     } else if (settingsdata.mediaType === 'PNG Sequence') {
-      adapter.render(PNGSequenceEncoder, encoderSettings, () => {});
+      adapter.render(PNGSequenceEncoder, encoderSettings, () => {}, updateCamera);
     } else if (settingsdata.mediaType === 'JPEG Sequence') {
-      adapter.render(JPEGSequenceEncoder, encoderSettings, () => {});
+      adapter.render(JPEGSequenceEncoder, encoderSettings, () => {}, updateCamera);
     } 
-    updateCamera(); // TODO anti-pattern?
+    // updateCamera(); // TODO anti-pattern?
   // preview();
   }
 
@@ -217,10 +217,10 @@ const InputGrid = styled.div`
 
 // then dispatch kepler store? TODO for future
 
-const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*/, settingsData}) => (
+const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*/, settingsData, setViewState}) => (
   <PanelBodyInner className="render-settings-panel__body"> 
     <div style={{width: "480px", height: "460px"}}>
-       <RenderSettingsPanelPreview mapData={mapData} encoderSettings={encoderSettings} adapter={adapter} /*ref={sce}*//> 
+       <RenderSettingsPanelPreview mapData={mapData} encoderSettings={encoderSettings} adapter={adapter} setViewState={setViewState}/*ref={sce}*//> 
     </div>
     <div>
     <StyledSection>Video Effects</StyledSection>
@@ -294,14 +294,14 @@ const ButtonGroup = styled.div`
   display: flex;
 `;
 
-const PanelFooter = ({handleClose, settingsData}) => (
+const PanelFooter = ({handleClose, settingsData, updateCamera}) => (
   <PanelFooterInner className="render-settings-panel__footer">
     <Button
       width={DEFAULT_BUTTON_WIDTH}
       height={DEFAULT_BUTTON_HEIGHT}
       secondary
       className={'render-settings-button'}
-      onClick={preview}
+      onClick={() => preview(updateCamera)}
     >
       Preview
     </Button>
@@ -319,7 +319,7 @@ const PanelFooter = ({handleClose, settingsData}) => (
         width={DEFAULT_BUTTON_WIDTH}
         height={DEFAULT_BUTTON_HEIGHT}
         className={'render-settings-button'}
-        onClick={() => render(settingsData)}
+        onClick={() => render(settingsData, updateCamera)}
       >
         Render
       </Button>
@@ -342,17 +342,13 @@ class RenderSettingsPanel extends Component {
       cameraHandle: undefined,
     //  quality: "High (720p)",
       viewState: INITIAL_VIEW_STATE,
-      setViewState: INITIAL_VIEW_STATE, // TODO unsure of how to use vs original implementation https://github.com/CodeLabs-Hubble-gl/hubble.gl/blob/master/examples/camera/app.js#L42
     };
 
     this.setMediaTypeState = this.setMediaTypeState.bind(this);
     this.setCamera = this.setCamera.bind(this);
     this.setFileName = this.setFileName.bind(this);
    // this.setQuality = this.setQuality.bind(this);
-  }
-
-  componentWillUnmount() { 
-    console.log("Reached render-settings-panel componentWillUnmount")
+    this.updateCamera = this.updateCamera.bind(this);
   }
 
   static defaultProps = {
@@ -360,7 +356,8 @@ class RenderSettingsPanel extends Component {
     buttonHeight: '16px'
   };
 
-  updateCamera(prevCamera) {
+  updateCamera(prevCamera) { //TODO this needs to call parseKeyframes
+    const viewState = this.state.viewState
     // Set by User
     prevCamera = new CameraKeyframes({
       timings: [0, 5000],
@@ -376,7 +373,7 @@ class RenderSettingsPanel extends Component {
           longitude: viewState.longitude,
           latitude: viewState.latitude,
           zoom: viewState.zoom,
-          bearing: viewState.bearing,
+          bearing: viewState.bearing + 180,
           pitch: viewState.pitch
         }
       ],
@@ -391,8 +388,6 @@ class RenderSettingsPanel extends Component {
       // NOTE this is where each parts of chain come from
       // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
       adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)
-      // adapter.scene.keyframes.camera = this.resetKeyframes() // Resets keyframes so that they don't inherit other options
-      console.log("DETACHED")
     }
 
     this.parseSetCameraType(strCameraType, adapter.scene.keyframes.camera)
@@ -447,10 +442,6 @@ class RenderSettingsPanel extends Component {
       } 
     }
   }
-
-  // resetKeyframes() { // minified default keyframes from scenebuilder fn
-  //   return new CameraKeyframes({timings:[0,5e3],keyframes:[{longitude:-122.4,latitude:37.74,zoom:5,pitch:30,bearing:0},{longitude:-122.4,latitude:37.74,zoom:5,bearing:35,pitch:50}],easings:[easing.easeInOut]})
-  // }
  
   setMediaTypeState(media){
     this.setState({
@@ -478,8 +469,6 @@ class RenderSettingsPanel extends Component {
 
   
   render() {
-    
-    console.log("this.state", this.state)
     const {buttonHeight, settingsWidth, handleClose} = this.props;
     const settingsData = {
       mediaType : this.state.mediaType,
@@ -502,10 +491,12 @@ class RenderSettingsPanel extends Component {
               setFileName={this.setFileName}
             //  setQuality={this.setQuality}
               settingsData={settingsData}
+              setViewState={(viewState) => {this.setState({viewState: viewState})}}
               />
           <PanelFooter 
               handleClose={handleClose} 
               settingsData = {settingsData}
+              updateCamera = {this.updateCamera}
               /> {/* handleClose for Cancel button */} 
         </Panel>
       </IntlProvider>

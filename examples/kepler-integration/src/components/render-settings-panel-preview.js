@@ -241,8 +241,8 @@ export class RenderSettingsPanelPreview extends Component {
                 layerFilter={this.layerFilter}
                 useDevicePixels={useDevicePixels}
                 style={style}
-                // onViewStateChange={this.onViewStateChange}
-                onViewStateChange={({viewState: vs}) => {setViewState(vs);}}
+                controller={true}
+                onViewStateChange={({viewState: vs}) => {this.props.setViewState(vs);}} // TODO temporary fix this.props
                 views={[
                   new MapView({id: 'MapView', repeat: true}),
                   new OrthographicView({id: "timestamp"})
