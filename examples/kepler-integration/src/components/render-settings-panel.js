@@ -21,7 +21,9 @@
 import React, {Component} from 'react';
 import styled, {withTheme} from 'styled-components';
 import {Button, Input, Icons, ItemSelector} from 'kepler.gl/components';
-import {Scene} from './scene'; // Not yet part of standard library. TODO when updated
+
+import {sceneBuilder} from './scene'; // Not yet part of standard library. TODO when updated
+import {RenderSettingsPanelPreview} from './render-settings-panel-preview'; // Not yet part of standard library. TODO when updated
 
 import { point } from '@turf/helpers';
 import transformTranslate from '@turf/transform-translate';
@@ -34,8 +36,6 @@ import {
   PreviewEncoder,
   GifEncoder
 } from '@hubble.gl/core';
-import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
-import {easing} from 'popmotion';
 import {DeckAdapter, ScatterPlotLayerKeyframes} from 'hubble.gl';
 
 import {DEFAULT_TIME_FORMAT} from 'kepler.gl';
@@ -58,41 +58,6 @@ const INITIAL_VIEW_STATE = {
 
 let adapter = new DeckAdapter(sceneBuilder);
 
-function sceneBuilder(animationLoop) {
-  const keyframes = {
-    camera: new CameraKeyframes({
-      timings: [0, 5000],
-      keyframes: [
-        {
-          longitude: -122.4,
-          latitude: 37.74,
-          zoom: 1,
-          pitch: 30,
-          bearing: 0
-        },
-        {
-          longitude: -122.4,
-          latitude: 37.74,
-          zoom: 1.8,
-          bearing: 35,
-          pitch: 70
-        }
-      ],
-      easings: [easing.easeInOut]
-    })
-  };
-  const currentCamera = animationLoop.timeline.attachAnimation(keyframes.camera);
-
-  return new DeckScene({
-    animationLoop,
-    keyframes,
-    lengthMs: 5000,
-    width: 480,
-    height: 460,
-    currentCamera
-  });
-}
-
 const encoderSettings = {
   framerate: 30,
   webm: {
@@ -112,6 +77,7 @@ const encoderSettings = {
 
 function preview() {
   adapter.render(PreviewEncoder, encoderSettings, ()=>{});
+  // updateCamera(); // TODO anti-pattern?
 }
 
 function setFileNameDeckAdapter(name){
@@ -145,7 +111,7 @@ function render(settingsdata){
     } else if (settingsdata.mediaType === 'JPEG Sequence') {
       adapter.render(JPEGSequenceEncoder, encoderSettings, () => {});
     } 
-    updateCamera();
+    updateCamera(); // TODO anti-pattern?
   // preview();
   }
 
@@ -254,7 +220,7 @@ const InputGrid = styled.div`
 const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*/, settingsData}) => (
   <PanelBodyInner className="render-settings-panel__body"> 
     <div style={{width: "480px", height: "460px"}}>
-       <Scene mapData={mapData} encoderSettings={encoderSettings} adapter={adapter} /*ref={sce}*//> 
+       <RenderSettingsPanelPreview mapData={mapData} encoderSettings={encoderSettings} adapter={adapter} /*ref={sce}*//> 
     </div>
     <div>
     <StyledSection>Video Effects</StyledSection>
