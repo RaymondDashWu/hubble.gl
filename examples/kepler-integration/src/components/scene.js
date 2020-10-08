@@ -48,7 +48,7 @@ export function sceneBuilder(animationLoop) {
   return new DeckScene({
     animationLoop,
     keyframes,
-    lengthMs: 5000,
+    lengthMs: 1000, // TODO change to 5000 later. 1000 for dev testing
     width: 480,
     height: 460,
     currentCamera

@@ -24,9 +24,9 @@ import {Button, Input, Icons, ItemSelector} from 'kepler.gl/components';
 
 import {sceneBuilder} from './scene'; // Not yet part of standard library. TODO when updated
 import {RenderSettingsPanelPreview} from './render-settings-panel-preview'; // Not yet part of standard library. TODO when updated
-
-import { point } from '@turf/helpers';
-import transformTranslate from '@turf/transform-translate';
+import {parseSetCameraType} from '../utils/parseSetCameraType'
+// import { point } from '@turf/helpers';
+// import transformTranslate from '@turf/transform-translate';
 
 import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
 import {easing} from 'popmotion';
@@ -111,8 +111,6 @@ function render(settingsdata, updateCamera){
     } else if (settingsdata.mediaType === 'JPEG Sequence') {
       adapter.render(JPEGSequenceEncoder, encoderSettings, () => {}, updateCamera);
     } 
-    // updateCamera(); // TODO anti-pattern?
-  // preview();
   }
 
 // TODO:
@@ -197,25 +195,6 @@ const InputGrid = styled.div`
   );
   grid-row-gap: ${DEFAULT_ROW_GAP};
 `;
-
-// PSEUDOCODE (all within scene.js)
-// setup initial_view_state to mapState values
-// componentDidMount
-// const INITIAL_VIEW_STATE = {
-//   longitude: mapState.longitude,
-//   latitude: ...,
-//   zoom: ...,
-//   pitch: 30,
-//   bearing: 0
-// };
-
-// react state to store view_state
-// for when user moves camera within modal
-
-// see how viewState is used
-// https://github.com/CodeLabs-Hubble-gl/hubble.gl/blob/master/examples/camera/app.js#L42
-
-// then dispatch kepler store? TODO for future
 
 const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*/, settingsData, setViewState}) => (
   <PanelBodyInner className="render-settings-panel__body"> 
@@ -356,8 +335,10 @@ class RenderSettingsPanel extends Component {
     buttonHeight: '16px'
   };
 
-  updateCamera(prevCamera) { //TODO this needs to call parseKeyframes
+  updateCamera(prevCamera) { 
     const viewState = this.state.viewState
+    const strCameraType = this.state.camera
+
     // Set by User
     prevCamera = new CameraKeyframes({
       timings: [0, 5000],
@@ -369,79 +350,12 @@ class RenderSettingsPanel extends Component {
           pitch: viewState.pitch,
           bearing: viewState.bearing
         },
-        {
-          longitude: viewState.longitude,
-          latitude: viewState.latitude,
-          zoom: viewState.zoom,
-          bearing: viewState.bearing + 180,
-          pitch: viewState.pitch
-        }
+        parseSetCameraType(strCameraType, viewState)
       ],
       easings: [easing.easeInOut]
     });
-
     return prevCamera;
   };
-
-  createKeyframe(strCameraType) {    
-    if (this.state.cameraHandle != undefined) { 
-      // NOTE this is where each parts of chain come from
-      // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
-      adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)
-    }
-
-    this.parseSetCameraType(strCameraType, adapter.scene.keyframes.camera)
-
-    const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(adapter.scene.keyframes.camera);
-    this.setState({cameraHandle: newCameraHandle})
-  }
-
-  parseSetCameraType(strCameraType, camera) {
-    const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns arr of important keywords. Should work for 2+ words in future ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
-
-    // Named this way for possibility of >2 keyframes in future
-    const firstKeyframe = camera.values[0]
-    const secondKeyframe = camera.values[1]
-
-    // Converts mapState object to turf friendly Point obj (GEOJSON)
-    const turfPoint = point([camera.values[1].longitude, camera.values[1].latitude])
-    console.log("turfPoint", turfPoint)
-    if (match[0] == "Orbit") {
-      secondKeyframe.bearing = parseInt(match[1])
-    }
-
-    // TODO future option that'll allow user to set X distance (km OR miles) directionally. Options inside turf
-    // https://turfjs.org/docs/#transformTranslate
-    const setChecker = new Set(["East", "South", "West", "North"])
-    if (setChecker.has(match[0])) {
-      if (match[0] == "East") { // TODO Temporary solution to catch this branch to master. Doesn't work for "East to North" for example if option allows in future
-        const translatedPoly = transformTranslate(turfPoint, 10000, 270);
-        secondKeyframe.longitude = translatedPoly.geometry.coordinates[0]
-      } else 
-      if (match[0] == "South") {
-        const translatedPoly = transformTranslate(turfPoint, 10000, 0);
-        secondKeyframe.latitude = translatedPoly.geometry.coordinates[1]
-      } else 
-      if (match[0] == "West") {
-        const translatedPoly = transformTranslate(turfPoint, 10000, 90);
-        secondKeyframe.longitude = translatedPoly.geometry.coordinates[0]
-      } else 
-      if (match[0] == "North") {
-        const translatedPoly = transformTranslate(turfPoint, 10000, 180);
-        console.log("translatedPoly", translatedPoly)
-        secondKeyframe.latitude = translatedPoly.geometry.coordinates[1]
-      }
-    }
-
-    if (match[0] == "Zoom") {
-      if (match[1] == "In") {
-        secondKeyframe.zoom = 15
-      } else 
-      if (match[1] == "Out") {
-        firstKeyframe.zoom = 15
-      } 
-    }
-  }
  
   setMediaTypeState(media){
     this.setState({
@@ -452,7 +366,6 @@ class RenderSettingsPanel extends Component {
       this.setState({
         camera: option
       });
-      this.createKeyframe(option)
   }
   setFileName(name){
     this.setState({
