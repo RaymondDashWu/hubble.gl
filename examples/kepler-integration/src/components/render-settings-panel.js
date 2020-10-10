@@ -25,8 +25,6 @@ import {Button, Input, Icons, ItemSelector} from 'kepler.gl/components';
 import {sceneBuilder} from './scene'; // Not yet part of standard library. TODO when updated
 import {RenderSettingsPanelPreview} from './render-settings-panel-preview'; // Not yet part of standard library. TODO when updated
 import {parseSetCameraType} from '../utils/parseSetCameraType'
-// import { point } from '@turf/helpers';
-// import transformTranslate from '@turf/transform-translate';
 
 import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
 import {easing} from 'popmotion';
@@ -341,7 +339,7 @@ class RenderSettingsPanel extends Component {
 
     // Set by User
     prevCamera = new CameraKeyframes({
-      timings: [0, 5000],
+      timings: [0, 1000], // TODO change to 5000 later. 1000 for dev testing
       keyframes: [
         {
           longitude: viewState.longitude,

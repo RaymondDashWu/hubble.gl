@@ -23,7 +23,7 @@ import {easing} from 'popmotion';
 export function sceneBuilder(animationLoop) {
   const keyframes = {
     camera: new CameraKeyframes({
-      timings: [0, 5000],
+      timings: [0, 1000], // TODO change to 5000 later. 1000 for dev testing
       keyframes: [
         {
           longitude: -122.4,

@@ -37,10 +37,6 @@ export class RenderSettingsPanelPreview extends Component {
 
     this.mapData = this.props.mapData;
 
-    // Setting up arguments for Orthographic View
-    // NOTE: other arguments allowed zoom, minZoom, maxZoom but those already used by TileLayer. Possible to have 2 instanes?
-    // this.mapData.mapState.target = [10, 10, 10]
-    // this.mapData.mapState.zoom = 100
     this.state = {
       timestamp: {
         latitude: 47.65,
@@ -104,7 +100,6 @@ export class RenderSettingsPanelPreview extends Component {
       }
 
       onViewStateChange({viewport, viewState}) {
-        console.log("Reached onViewStateChange")
         if (viewport.id === 'timestamp') {
           this.setState({
             timestamp: {
@@ -112,9 +107,6 @@ export class RenderSettingsPanelPreview extends Component {
               latitude: viewState.latitude
             }
           })
-          
-        } else {
-          // pass
         }
       }
        
@@ -228,13 +220,11 @@ export class RenderSettingsPanelPreview extends Component {
          const style = {
             position: 'relative'
           }
-          console.log("tilelayer ",tileLayer);
-        
-        console.log("deckGlLayers ", deckGlLayers);
-        return (
+
+          return (
             <div id="deck-canvas" style={{width: '480px', height: "460px", position: 'relative'}}>
               <DeckGL
-                ref={r => {this.deckgl={current:r}}} // TODO problem line.
+                ref={r => {this.deckgl={current:r}}} 
                 viewState={mapState}
                 id="default-deckgl-overlay2"
                 layers={deckGlLayers}
@@ -242,7 +232,7 @@ export class RenderSettingsPanelPreview extends Component {
                 useDevicePixels={useDevicePixels}
                 style={style}
                 controller={true}
-                onViewStateChange={({viewState: vs}) => {this.props.setViewState(vs);}} // TODO temporary fix this.props
+                onViewStateChange={({viewState: vs}) => {this.props.setViewState(vs);}} 
                 views={[
                   new MapView({id: 'MapView', repeat: true}),
                   new OrthographicView({id: "timestamp"})

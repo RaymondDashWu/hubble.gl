@@ -376,14 +376,6 @@ class App extends Component {
             node ? (this.root = node) : null;
           }}
         >
-          {/* <Banner
-            show={this.state.showBanner}
-            height={BannerHeight}
-            bgColor="#2E7CF6"
-            onClose={this._hideBanner}
-          >
-            <Announcement onDisable={this._disableBanner} />
-          </Banner> */}
           <div
             style={{
               transition: 'margin 1s, height 1s',
