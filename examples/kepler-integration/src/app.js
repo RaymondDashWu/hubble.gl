@@ -24,8 +24,7 @@ import styled, {ThemeProvider} from 'styled-components';
 import window from 'global/window';
 import {connect} from 'react-redux';
 import {theme} from 'kepler.gl/styles';
-import Banner from './components/banner';
-import Announcement, {FormLink} from './components/announcement';
+import {FormLink} from './components/announcement';
 import {replaceLoadDataModal} from './factories/load-data-modal';
 import {replaceMapControl} from './factories/map-control';
 import {replacePanelHeader} from './factories/panel-header';
@@ -40,7 +39,7 @@ import {
 import {loadCloudMap} from 'kepler.gl/actions';
 import {CLOUD_PROVIDERS} from './cloud-providers';
 
-import HubbleExport from './components/hubble-export'
+import HubbleExport from './components/hubble-export';
 
 const KeplerGl = require('kepler.gl/components').injectComponents([
   replaceLoadDataModal(),
@@ -62,7 +61,6 @@ import {addDataToMap, addNotification} from 'kepler.gl/actions';
 import {processCsvData, processGeojson} from 'kepler.gl/processors';
 /* eslint-enable no-unused-vars */
 
-const BannerHeight = 48;
 const BannerKey = `banner-${FormLink}`;
 const keplerGlGetState = state => state.demo.keplerGl;
 
@@ -383,7 +381,7 @@ class App extends Component {
               width: '100%',
               height: '90%',
               left: 0,
-              top: '10%',
+              top: '10%'
             }}
           >
             <AutoSizer>

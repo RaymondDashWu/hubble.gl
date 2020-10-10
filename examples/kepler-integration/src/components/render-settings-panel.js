@@ -24,19 +24,19 @@ import {Button, Input, Icons, ItemSelector} from 'kepler.gl/components';
 
 import {sceneBuilder} from './scene'; // Not yet part of standard library. TODO when updated
 import {RenderSettingsPanelPreview} from './render-settings-panel-preview'; // Not yet part of standard library. TODO when updated
-import {parseSetCameraType} from '../utils/parseSetCameraType'
+import {parseSetCameraType} from '../utils/parseSetCameraType';
 
-import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
+import {CameraKeyframes} from '@hubble.gl/core';
 import {easing} from 'popmotion';
 
 import {
   WebMEncoder,
   JPEGSequenceEncoder,
   PNGSequenceEncoder,
-  PreviewEncoder,
-  GifEncoder
+  PreviewEncoder
+  // GifEncoder
 } from '@hubble.gl/core';
-import {DeckAdapter, ScatterPlotLayerKeyframes} from 'hubble.gl';
+import {DeckAdapter} from 'hubble.gl';
 
 import {DEFAULT_TIME_FORMAT} from 'kepler.gl';
 import moment from 'moment';
@@ -56,7 +56,7 @@ const INITIAL_VIEW_STATE = {
   bearing: 0
 };
 
-let adapter = new DeckAdapter(sceneBuilder);
+const adapter = new DeckAdapter(sceneBuilder);
 
 const encoderSettings = {
   framerate: 30,
@@ -69,21 +69,22 @@ const encoderSettings = {
   gif: {
     sampleInterval: 1000
   },
-  webm:{
-    quality: 1.5
-  },
-  filename: "Default Video Name" + " " + moment().format(DEFAULT_TIME_FORMAT).toString()
+  filename: `${'Default Video Name' + ' '}${moment()
+    .format(DEFAULT_TIME_FORMAT)
+    .toString()}`
 };
 
 function preview(updateCamera) {
-  adapter.render(PreviewEncoder, encoderSettings, ()=>{}, updateCamera);
+  adapter.render(PreviewEncoder, encoderSettings, () => {}, updateCamera);
 }
 
-function setFileNameDeckAdapter(name){
-  encoderSettings.filename = name + " " + moment().format(DEFAULT_TIME_FORMAT).toString();
+function setFileNameDeckAdapter(name) {
+  encoderSettings.filename = `${name} ${moment()
+    .format(DEFAULT_TIME_FORMAT)
+    .toString()}`;
 }
 
-/*function setResolution(resolution){
+/* function setResolution(resolution){
   if(resolution === 'Good (540p)'){
     adapter.scene.width = 960;
     adapter.scene.height = 540;
@@ -96,20 +97,20 @@ function setFileNameDeckAdapter(name){
   }
 }*/
 
-// This is temporary, for showing purposes on Friday, resolution settings should be in a separate function, 
-// only because we are against the clock. 
+// This is temporary, for showing purposes on Friday, resolution settings should be in a separate function,
+// only because we are against the clock.
 // TODO: refactor
-function render(settingsdata, updateCamera){
+function render(settingsdata, updateCamera) {
   //  setResolution(settingsdata.resolution); // Remove this
 
-    if (settingsdata.mediaType === 'WebM Video') {
-      adapter.render(WebMEncoder, encoderSettings, () => {}, updateCamera);
-    } else if (settingsdata.mediaType === 'PNG Sequence') {
-      adapter.render(PNGSequenceEncoder, encoderSettings, () => {}, updateCamera);
-    } else if (settingsdata.mediaType === 'JPEG Sequence') {
-      adapter.render(JPEGSequenceEncoder, encoderSettings, () => {}, updateCamera);
-    } 
+  if (settingsdata.mediaType === 'WebM Video') {
+    adapter.render(WebMEncoder, encoderSettings, () => {}, updateCamera);
+  } else if (settingsdata.mediaType === 'PNG Sequence') {
+    adapter.render(PNGSequenceEncoder, encoderSettings, () => {}, updateCamera);
+  } else if (settingsdata.mediaType === 'JPEG Sequence') {
+    adapter.render(JPEGSequenceEncoder, encoderSettings, () => {}, updateCamera);
   }
+}
 
 // TODO:
 
@@ -121,8 +122,6 @@ function render(settingsdata, updateCamera){
 // Set Duration function
 // Calculate File Size function
 // Render Function DONE
-
-function nop() {}
 
 const IconButton = styled(Button)`
   padding: 0;
@@ -138,8 +137,14 @@ const PanelCloseInner = styled.div`
 `;
 
 const PanelClose = ({buttonHeight, handleClose}) => (
-  <PanelCloseInner className="render-settings-panel__close" >
-    <IconButton className="render-settings-panel__button" link onClick={() => {handleClose()}}>
+  <PanelCloseInner className="render-settings-panel__close">
+    <IconButton
+      className="render-settings-panel__button"
+      link
+      onClick={() => {
+        handleClose();
+      }}
+    >
       <Icons.Delete height={buttonHeight} />
     </IconButton>
   </PanelCloseInner>
@@ -194,68 +199,80 @@ const InputGrid = styled.div`
   grid-row-gap: ${DEFAULT_ROW_GAP};
 `;
 
-const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*/, settingsData, setViewState}) => (
-  <PanelBodyInner className="render-settings-panel__body"> 
-    <div style={{width: "480px", height: "460px"}}>
-       <RenderSettingsPanelPreview mapData={mapData} encoderSettings={encoderSettings} adapter={adapter} setViewState={setViewState}/*ref={sce}*//> 
+const PanelBody = ({
+  mapData,
+  setMediaType,
+  setCamera,
+  setFileName /* , setQuality*/,
+  settingsData,
+  setViewState
+}) => (
+  <PanelBodyInner className="render-settings-panel__body">
+    <div style={{width: '480px', height: '460px'}}>
+      <RenderSettingsPanelPreview
+        mapData={mapData}
+        encoderSettings={encoderSettings}
+        adapter={adapter}
+        setViewState={setViewState} /* ref={sce}*/
+      />
     </div>
     <div>
-    <StyledSection>Video Effects</StyledSection>
-    <InputGrid rows={2}>
-      <StyledLabelCell>Timestamp</StyledLabelCell> {/* TODO add functionality  */}
-      <ItemSelector
-        selectedItems={['None']}
-        options={['None', 'White', 'Black']}
-        multiSelect={false}
-        searchable={false}
-      />
-      <StyledLabelCell>Camera</StyledLabelCell> {/* TODO add functionality */}
-      <ItemSelector
-        selectedItems={settingsData.camera}
-        options={[
-          'None',
-          'Orbit (90º)',
-          'Orbit (180º)',
-          'Orbit (360º)',
-          'North to South',
-          'South to North',
-          'East to West',
-          'West to East',
-          'Zoom Out',
-          'Zoom In'
-        ]}
-        multiSelect={false}
-        searchable={false}
-        onChange={setCamera}
-      />
-    </InputGrid>
-    <StyledSection>Export Settings</StyledSection> {/* TODO add functionality  */}
-    <InputGrid rows={3}>
-      <StyledLabelCell>File Name</StyledLabelCell>
-      <Input placeholder={settingsData.fileName} onChange={setFileName}/>
-      <StyledLabelCell>Media Type</StyledLabelCell> {/* TODO add functionality  */}
-      <ItemSelector
-        selectedItems={settingsData.mediaType}
-        options={['WebM Video', 'PNG Sequence', 'JPEG Sequence']}
-        multiSelect={false}
-        searchable={false}
-        onChange={setMediaType}
-      />
-      <StyledLabelCell>Quality</StyledLabelCell> {/* TODO add functionality  */}
-      <ItemSelector
-        selectedItems={settingsData.resolution}
-        options={['Good (540p)', 'High (720p)', 'Highest (1080p)']}
-        multiSelect={false}
-        searchable={false}
-        onChange={() => {}}
-      />
-    </InputGrid>
-    <InputGrid style={{marginTop: DEFAULT_ROW_GAP}} rows={2} rowHeight="18px">
-      <StyledLabelCell>Duration</StyledLabelCell> {/* TODO add functionality  */}
-      <StyledValueCell>00:00:30</StyledValueCell> 
-      <StyledLabelCell>File Size</StyledLabelCell> {/* TODO add functionality  */}
-      <StyledValueCell>36 MB</StyledValueCell>
-    </InputGrid>
+      <StyledSection>Video Effects</StyledSection>
+      <InputGrid rows={2}>
+        <StyledLabelCell>Timestamp</StyledLabelCell> {/* TODO add functionality  */}
+        <ItemSelector
+          selectedItems={['None']}
+          options={['None', 'White', 'Black']}
+          multiSelect={false}
+          searchable={false}
+        />
+        <StyledLabelCell>Camera</StyledLabelCell> {/* TODO add functionality */}
+        <ItemSelector
+          selectedItems={settingsData.camera}
+          options={[
+            'None',
+            'Orbit (90º)',
+            'Orbit (180º)',
+            'Orbit (360º)',
+            'North to South',
+            'South to North',
+            'East to West',
+            'West to East',
+            'Zoom Out',
+            'Zoom In'
+          ]}
+          multiSelect={false}
+          searchable={false}
+          onChange={setCamera}
+        />
+      </InputGrid>
+      <StyledSection>Export Settings</StyledSection> {/* TODO add functionality  */}
+      <InputGrid rows={3}>
+        <StyledLabelCell>File Name</StyledLabelCell>
+        <Input placeholder={settingsData.fileName} onChange={setFileName} />
+        <StyledLabelCell>Media Type</StyledLabelCell> {/* TODO add functionality  */}
+        <ItemSelector
+          selectedItems={settingsData.mediaType}
+          options={['WebM Video', 'PNG Sequence', 'JPEG Sequence']}
+          multiSelect={false}
+          searchable={false}
+          onChange={setMediaType}
+        />
+        <StyledLabelCell>Quality</StyledLabelCell> {/* TODO add functionality  */}
+        <ItemSelector
+          selectedItems={settingsData.resolution}
+          options={['Good (540p)', 'High (720p)', 'Highest (1080p)']}
+          multiSelect={false}
+          searchable={false}
+          onChange={() => {}}
+        />
+      </InputGrid>
+      <InputGrid style={{marginTop: DEFAULT_ROW_GAP}} rows={2} rowHeight="18px">
+        <StyledLabelCell>Duration</StyledLabelCell> {/* TODO add functionality  */}
+        <StyledValueCell>00:00:30</StyledValueCell>
+        <StyledLabelCell>File Size</StyledLabelCell> {/* TODO add functionality  */}
+        <StyledValueCell>36 MB</StyledValueCell>
+      </InputGrid>
     </div>
   </PanelBodyInner>
 );
@@ -288,7 +305,9 @@ const PanelFooter = ({handleClose, settingsData, updateCamera}) => (
         height={DEFAULT_BUTTON_HEIGHT}
         link
         className={'render-settings-button'}
-        onClick={() => {handleClose()}}
+        onClick={() => {
+          handleClose();
+        }}
       >
         Cancel
       </Button>
@@ -313,18 +332,18 @@ class RenderSettingsPanel extends Component {
     super(props);
 
     this.state = {
-      mediaType: "WebM Video",
-      camera: "None", 
-      fileName: "Video Name",
+      mediaType: 'WebM Video',
+      camera: 'None',
+      fileName: 'Video Name',
       cameraHandle: undefined,
-    //  quality: "High (720p)",
-      viewState: INITIAL_VIEW_STATE,
+      //  quality: "High (720p)",
+      viewState: INITIAL_VIEW_STATE
     };
 
     this.setMediaTypeState = this.setMediaTypeState.bind(this);
     this.setCamera = this.setCamera.bind(this);
     this.setFileName = this.setFileName.bind(this);
-   // this.setQuality = this.setQuality.bind(this);
+    // this.setQuality = this.setQuality.bind(this);
     this.updateCamera = this.updateCamera.bind(this);
   }
 
@@ -333,9 +352,9 @@ class RenderSettingsPanel extends Component {
     buttonHeight: '16px'
   };
 
-  updateCamera(prevCamera) { 
-    const viewState = this.state.viewState
-    const strCameraType = this.state.camera
+  updateCamera(prevCamera) {
+    const viewState = this.state.viewState;
+    const strCameraType = this.state.camera;
 
     // Set by User
     prevCamera = new CameraKeyframes({
@@ -353,62 +372,63 @@ class RenderSettingsPanel extends Component {
       easings: [easing.easeInOut]
     });
     return prevCamera;
-  };
- 
-  setMediaTypeState(media){
+  }
+
+  setMediaTypeState(media) {
     this.setState({
       mediaType: media
     });
   }
-  setCamera(option){
-      this.setState({
-        camera: option
-      });
+  setCamera(option) {
+    this.setState({
+      camera: option
+    });
   }
-  setFileName(name){
+  setFileName(name) {
     this.setState({
       fileName: name.target.value
     });
     setFileNameDeckAdapter(name.target.value);
   }
- /* setQuality(resolution){
+  /* setQuality(resolution){
     this.setState({
       quality: resolution
     });
     setResolution(resolution);
   }*/
 
-  
   render() {
     const {buttonHeight, settingsWidth, handleClose} = this.props;
     const settingsData = {
-      mediaType : this.state.mediaType,
-      camera : this.state.camera,
+      mediaType: this.state.mediaType,
+      camera: this.state.camera,
       fileName: this.state.fileName,
-      resolution: this.state.quality,
-    }
-   
+      resolution: this.state.quality
+    };
+
     return (
-      <IntlProvider locale="en" messages={messages["en"]}>
+      <IntlProvider locale="en" messages={messages.en}>
         <Panel settingsWidth={settingsWidth} className="render-settings-panel">
-          <PanelClose 
-              buttonHeight={buttonHeight} 
-              handleClose={handleClose}/> {/* handleClose for X button */}
-          <StyledTitle className="render-settings-panel__title">Export Video</StyledTitle>  
-          <PanelBody 
-              mapData={this.props.mapData} 
-              setMediaType={this.setMediaTypeState} 
-              setCamera={this.setCamera}
-              setFileName={this.setFileName}
+          <PanelClose buttonHeight={buttonHeight} handleClose={handleClose} />{' '}
+          {/* handleClose for X button */}
+          <StyledTitle className="render-settings-panel__title">Export Video</StyledTitle>
+          <PanelBody
+            mapData={this.props.mapData}
+            setMediaType={this.setMediaTypeState}
+            setCamera={this.setCamera}
+            setFileName={this.setFileName}
             //  setQuality={this.setQuality}
-              settingsData={settingsData}
-              setViewState={(viewState) => {this.setState({viewState: viewState})}}
-              />
-          <PanelFooter 
-              handleClose={handleClose} 
-              settingsData = {settingsData}
-              updateCamera = {this.updateCamera}
-              /> {/* handleClose for Cancel button */} 
+            settingsData={settingsData}
+            setViewState={viewState => {
+              this.setState({viewState});
+            }}
+          />
+          <PanelFooter
+            handleClose={handleClose}
+            settingsData={settingsData}
+            updateCamera={this.updateCamera}
+          />{' '}
+          {/* handleClose for Cancel button */}
         </Panel>
       </IntlProvider>
     );

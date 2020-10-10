@@ -2,7 +2,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const resolve = require('path').resolve;
 
-
 const config = {
   mode: 'development',
 

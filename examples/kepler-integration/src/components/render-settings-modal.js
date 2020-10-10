@@ -105,7 +105,12 @@ class RenderSettingsModal extends Component {
               );
             }}
           >
-            <RenderSettingsPanel handleClose={() => {handleClose()}} mapData={this.props.mapData}/>
+            <RenderSettingsPanel
+              handleClose={() => {
+                handleClose();
+              }}
+              mapData={this.props.mapData}
+            />
           </Modal>
         ) : null}
       </ModalContainer>
