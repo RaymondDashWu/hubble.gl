@@ -40,13 +40,13 @@ export class RenderSettingsPanelPreview extends Component {
       }
     };
 
-    // this.adapter = new DeckAdapter(this.props.sceneBuilder);
+    this._renderLayer = this._renderLayer.bind(this);
   }
 
   componentDidMount() {
     this.forceUpdate();
   }
-  _renderLayer = (overlays, idx) => {
+  _renderLayer(overlays, idx) {
     const datasets = this.mapData.visState.datasets;
     const layers = this.mapData.visState.layers;
     const layerData = this.mapData.visState.layerData;
@@ -77,10 +77,7 @@ export class RenderSettingsPanelPreview extends Component {
       objectHovered
     });
     return overlays.concat(layerOverlay || []);
-  };
-
-  // This is provisional -
-  // [ADD] TileLayer to the array of layers
+  }
 
   layerFilter({layer, viewport}) {
     if (viewport.id === 'timestamp' && layer.id === 'timestamp') {
@@ -120,23 +117,6 @@ export class RenderSettingsPanelPreview extends Component {
 
     // define trip and geojson layers
     let deckGlLayers = [];
-
-    const TEXT_DATA = [
-      {
-        text: 'Dataset\nTitle', // TODO make this an input and parse their str. Ex: new line becomes \n
-        position: this.mapData.mapState.target, // TODO RESEARCH coordinate system prop. Change to x,y,z. Also look up Coordinate origin in layer base class documentation
-        color: [255, 0, 0] // TODO temporarily red
-      }
-    ];
-
-    // TODO Timestamp does not work with current implementation
-    // const timestamp = new TextLayer({
-    //   data: TEXT_DATA,
-    //   getText: d => d.text,
-    //   getPosition: d => d.position,
-    //   getColor: d => d.color,
-    //   id: 'timestamp'
-    // });
 
     const tileLayer = new TileLayer({
       autoHighlight: true,
@@ -185,34 +165,15 @@ export class RenderSettingsPanelPreview extends Component {
       // }
     }
 
-    // deckGlLayers[3] = timestamp;
     deckGlLayers[2] = deckGlLayers[1];
     deckGlLayers[1] = deckGlLayers[0];
     deckGlLayers[0] = tileLayer;
-
-    // var i;
-    // for (i = 0; i < deckGlLayers.length; i++) {
-    //   deckGlLayers[i].shouldUpdateState()
-    // }
-    // deckGlLayers.push(timestamp)
-    // deckGlLayers.push(tileLayer)
-
-    // console.log("deckGlLayers ", deckGlLayers);
-    // console.log("timestamp textlayer", timestamp)
-
-    // MapboxGLMap
-    // const mapProps = {
-    //   ...mapState,
-    //   preserveDrawingBuffer: true,
-    //   mapboxApiAccessToken,
-    //   mapboxApiUrl,
-    //   transformRequest
-    // };
 
     const style = {
       position: 'relative'
     };
 
+    console.log('deckGlLayers', deckGlLayers);
     return (
       <div id="deck-canvas" style={{width: '480px', height: '460px', position: 'relative'}}>
         <DeckGL

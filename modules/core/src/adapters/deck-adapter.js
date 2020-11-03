@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 /* eslint-disable no-console */
-import {Timeline} from '@luma.gl/engine';
 import {PreviewEncoder} from '../encoders';
 // eslint-disable-next-line no-unused-vars
 import {DeckScene} from '../scene';
@@ -44,7 +43,6 @@ export default class DeckAdapter {
     this.enabled = false;
     this.getProps = this.getProps.bind(this);
     this.render = this.render.bind(this);
-    this.preview = this.preview.bind(this);
     this.stop = this.stop.bind(this);
     this._deckOnLoad = this._deckOnLoad.bind(this);
     this._getViewState = this._getViewState.bind(this);
@@ -93,8 +91,8 @@ export default class DeckAdapter {
   /**
    * @param {typeof import('../encoders').FrameEncoder} Encoder
    * @param {import('types').FrameEncoderSettings} encoderSettings
-   * @param {(params: any) => void} onStop
-   * @param {(prevCamera: any) => void} updateCamera
+   * @param {() => void} onStop
+   * @param {(prevCamera: import('../keyframes').CameraKeyframes) => void} updateCamera
    */
   render(
     Encoder = PreviewEncoder,
@@ -111,20 +109,16 @@ export default class DeckAdapter {
       );
     }
 
-    const innerOnStop = params => {
+    const innerOnStop = () => {
       this.enabled = false;
       if (onStop) {
-        onStop(params);
+        onStop();
       }
     };
     this.shouldAnimate = true;
     this.videoCapture.render(Encoder, encoderSettings, this.scene.lengthMs, innerOnStop);
     this.scene.animationLoop.timeline.setTime(this.videoCapture.encoderSettings.startOffsetMs);
     this.enabled = true;
-  }
-
-  preview() {
-    this.scene.animationLoop.timeline.play();
   }
 
   /**
@@ -140,7 +134,7 @@ export default class DeckAdapter {
     this.deck = deck;
 
     const animationLoop = deck.animationLoop;
-    animationLoop.attachTimeline(new Timeline());
+    animationLoop.timeline.pause();
     animationLoop.timeline.setTime(0);
 
     await Promise.resolve(this.sceneBuilder(animationLoop)).then(scene => {

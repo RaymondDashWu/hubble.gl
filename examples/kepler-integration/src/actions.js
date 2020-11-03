@@ -18,16 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+<<<<<<< HEAD
 import {push} from 'react-router-redux';
 import {request, text as requestText, json as requestJson} from 'd3-request';
 import {loadFiles, toggleModal} from 'kepler.gl/actions';
+=======
+import {text as requestText, json as requestJson} from 'd3-request';
+import {toggleModal} from 'kepler.gl/actions';
+>>>>>>> 86b6f46e3a7d2208dd136c8e64266e4e41ca024c
 
 import {
   LOADING_SAMPLE_ERROR_MESSAGE,
   LOADING_SAMPLE_LIST_ERROR_MESSAGE,
   MAP_CONFIG_URL
 } from './constants/default-settings';
+<<<<<<< HEAD
 import {parseUri} from './utils/url';
+=======
+>>>>>>> 86b6f46e3a7d2208dd136c8e64266e4e41ca024c
 
 // CONSTANTS
 export const INIT = 'INIT';
@@ -36,10 +44,13 @@ export const LOAD_REMOTE_RESOURCE_ERROR = 'LOAD_REMOTE_RESOURCE_ERROR';
 export const LOAD_MAP_SAMPLE_FILE = 'LOAD_MAP_SAMPLE_FILE';
 export const SET_SAMPLE_LOADING_STATUS = 'SET_SAMPLE_LOADING_STATUS';
 
+<<<<<<< HEAD
 // Sharing
 export const PUSHING_FILE = 'PUSHING_FILE';
 export const CLOUD_LOGIN_SUCCESS = 'CLOUD_LOGIN_SUCCESS';
 
+=======
+>>>>>>> 86b6f46e3a7d2208dd136c8e64266e4e41ca024c
 // ACTIONS
 export function initApp() {
   return {
@@ -79,6 +90,7 @@ export function setLoadingMapStatus(isMapLoading) {
 }
 
 /**
+<<<<<<< HEAD
  * Actions passed to kepler.gl, called
  *
  * Note: exportFile is called on both saving and sharing
@@ -106,6 +118,8 @@ export function onLoadCloudMapSuccess({response, provider, loadParams}) {
   };
 }
 /**
+=======
+>>>>>>> 86b6f46e3a7d2208dd136c8e64266e4e41ca024c
  * this method detects whther the response status is < 200 or > 300 in case the error
  * is not caught by the actualy request framework
  * @param response the response
@@ -118,6 +132,7 @@ function detectResponseError(response) {
       message: response.body || response.message || response
     };
   }
+<<<<<<< HEAD
 }
 
 // This can be moved into Kepler.gl to provide ability to load data from remote URLs
@@ -176,6 +191,9 @@ function loadRemoteRawData(url) {
       resolve([result.response, url]);
     });
   });
+=======
+  return undefined;
+>>>>>>> 86b6f46e3a7d2208dd136c8e64266e4e41ca024c
 }
 
 // The following methods are only used to load SAMPLES
@@ -195,6 +213,7 @@ function loadRemoteRawData(url) {
  */
 export function loadSample(options, pushRoute = true) {
   return (dispatch, getState) => {
+<<<<<<< HEAD
     const {routing} = getState();
     if (options.id && pushRoute) {
       dispatch(push(`/demo/${options.id}${routing.locationBeforeTransitions.search}`));
@@ -206,6 +225,9 @@ export function loadSample(options, pushRoute = true) {
       dispatch(loadRemoteSampleMap(options));
     }
 
+=======
+    dispatch(loadRemoteSampleMap(options));
+>>>>>>> 86b6f46e3a7d2208dd136c8e64266e4e41ca024c
     dispatch(setLoadingMapStatus(true));
   };
 }

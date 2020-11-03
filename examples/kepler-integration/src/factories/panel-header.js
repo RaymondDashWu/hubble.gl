@@ -43,7 +43,6 @@ export function CustomPanelHeaderFactory(...deps) {
         tooltip: 'User Guide',
         onClick: () => {}
       },
-      defaultActionItems.find(item => item.id === 'storage'),
       {
         ...defaultActionItems.find(item => item.id === 'save'),
         label: null,
